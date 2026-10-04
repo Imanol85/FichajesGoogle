@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Fichajes</title>
+<meta name="description" content="Control horario: fichaje con ubicación">
+<meta name="theme-color" content="#3b5bfd">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Fichajes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="format-detection" content="telephone=no">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="iconos/icono-180.png">
+<link rel="icon" type="image/png" sizes="192x192" href="iconos/icono-192.png">
+<link rel="stylesheet" href="estilos.css">
+</head>
+<body>
+
+<!-- Acceso -->
+<section id="acceso" class="pantalla" hidden>
+  <div class="acceso-caja">
+    <div class="marca">
+      <div class="logo">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
+      </div>
+      <h1>Fichajes</h1>
+      <p>Entra con el usuario y la contraseña que te ha dado la empresa</p>
+    </div>
+    <form id="f-login" class="card" autocomplete="on" novalidate>
+      <div id="campo-servidor" hidden>
+        <label for="l-servidor">Dirección del servidor</label>
+        <input id="l-servidor" type="url" inputmode="url" autocapitalize="none" autocorrect="off" spellcheck="false" placeholder="https://script.google.com/macros/s/…/exec">
+      </div>
+      <label for="l-usuario">Usuario</label>
+      <input id="l-usuario" type="text" autocomplete="username" autocapitalize="none" autocorrect="off" spellcheck="false">
+      <label for="l-clave">Contraseña</label>
+      <div class="campo-clave">
+        <input id="l-clave" type="password" autocomplete="current-password">
+        <button type="button" class="enlace" id="l-ver">Ver</button>
+      </div>
+      <button type="submit" class="btn primario grande" id="l-entrar">Entrar</button>
+      <p class="pista" id="l-error" role="alert" hidden></p>
+    </form>
+    <p class="pista centrado" id="l-instalar" hidden></p>
+  </div>
+</section>
+
+<!-- Aplicación -->
+<section id="app" hidden>
+  <header class="hero">
+    <div class="hero-in">
+      <div>
+        <div class="saludo" id="saludo">Hola</div>
+        <div class="hero-sub" id="fecha"></div>
+      </div>
+      <button type="button" class="btn-hero" id="b-salir">Cerrar sesión</button>
+    </div>
+  </header>
+
+  <main>
+    <div class="card reloj-card">
+      <span class="pill" id="pill"><i class="punto"></i><span id="pill-texto">Fuera de jornada</span></span>
+      <div class="reloj" id="reloj">0:00:00</div>
+      <div class="reloj-sub">Tiempo trabajado hoy</div>
+      <div class="mini-stats">
+        <div><span class="mini-n" id="st-entrada">—</span><span class="mini-l">Entrada</span></div>
+        <div><span class="mini-n" id="st-pausas">0 min</span><span class="mini-l">Pausas</span></div>
+        <div><span class="mini-n" id="st-puntos">—</span><span class="mini-l">Último punto</span></div>
+      </div>
+    </div>
+
+    <div class="acciones" id="acciones">
+      <button type="button" class="btn ambar grande" id="b-secundario" hidden>Pausa</button>
+      <button type="button" class="btn verde grande" id="b-principal">Fichar entrada</button>
+    </div>
+
+    <div class="aviso" id="sin-conexion" hidden>Sin conexión. Se muestran los últimos datos recibidos.</div>
+
+    <div class="card" id="c-seguimiento">
+      <h3>Ubicación durante la jornada</h3>
+      <p class="texto" id="seg-texto"></p>
+      <p class="aviso ambar" id="seg-aviso" hidden></p>
+      <label class="interruptor">
+        <input type="checkbox" id="seg-pantalla">
+        <span class="carril"><span class="bola"></span></span>
+        <span class="interruptor-texto">Mantener la pantalla encendida durante la jornada</span>
+      </label>
+      <p class="pista" id="seg-pantalla-nota" hidden></p>
+    </div>
+
+    <div class="card">
+      <h3>Hoy</h3>
+      <ul class="linea" id="lista-hoy"></ul>
+      <p class="pista" id="horario"></p>
+    </div>
+
+    <div class="card" id="c-instalar" hidden>
+      <h3>Instalar en el móvil</h3>
+      <p class="texto" id="instalar-texto"></p>
+      <button type="button" class="btn primario" id="b-instalar" hidden>Instalar</button>
+    </div>
+  </main>
+</section>
+
+<!-- Confirmación -->
+<div class="velo" id="dlg" hidden>
+  <div class="dialogo" role="dialog" aria-modal="true" aria-labelledby="dlg-titulo">
+    <h2 id="dlg-titulo"></h2>
+    <p id="dlg-texto"></p>
+    <div class="dialogo-botones">
+      <button type="button" class="btn plano" id="dlg-no">Cancelar</button>
+      <button type="button" class="btn rosa" id="dlg-si">Aceptar</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast" role="status" aria-live="polite" hidden></div>
+
+<script src="config.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
