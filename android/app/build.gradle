@@ -1,0 +1,36 @@
+plugins {
+    id 'com.android.application'
+}
+
+android {
+    namespace 'com.fichajes.app'
+    compileSdk 34
+
+    defaultConfig {
+        applicationId 'com.fichajes.app'
+        minSdk 26
+        targetSdk 34
+        versionCode 1
+        versionName '1.0'
+
+        // Dirección del servidor, tomada de gradle.properties (FICHAJES_URL).
+        buildConfigField 'String', 'SERVIDOR_URL', "\"${(project.findProperty('FICHAJES_URL') ?: '').toString().trim()}\""
+    }
+
+    buildFeatures {
+        buildConfig true
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_11
+        targetCompatibility JavaVersion.VERSION_11
+    }
+}
+
+// Sin dependencias externas: la app usa solo las API de la plataforma Android.

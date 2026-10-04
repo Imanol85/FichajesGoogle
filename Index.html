@@ -1,0 +1,1247 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<base target="_top">
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --fondo: #f2f4fb; --tarjeta: #ffffff; --tinta: #14172e; --suave: #6a7090; --linea: #e5e8f3; --campo: #f6f7fc;
+    --marca: #3b5bfd; --marca-2: #7c3aed; --marca-3: #0fb5ae; --marca-tinte: #eef1ff;
+    --verde: #0fa97a; --verde-tinte: #e3f7ef; --ambar: #d98a06; --ambar-tinte: #fdf1d8;
+    --rosa: #e5365a; --rosa-tinte: #fde8ed; --gris: #8891ad; --gris-tinte: #eceef6;
+    --sombra: 0 1px 2px rgba(20, 23, 46, .05), 0 10px 30px -12px rgba(20, 23, 46, .18);
+    --degradado: linear-gradient(135deg, #0fb5ae 0%, #3b5bfd 48%, #7c3aed 100%);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --fondo: #0c0e1c; --tarjeta: #161930; --tinta: #eef0ff; --suave: #9aa1c4; --linea: #282c49; --campo: #1e2240;
+      --marca: #7f95ff; --marca-2: #a78bfa; --marca-3: #2dd4bf; --marca-tinte: #20264d;
+      --verde: #34d399; --verde-tinte: #12352c; --ambar: #fbbf24; --ambar-tinte: #3a2d0e;
+      --rosa: #fb7185; --rosa-tinte: #3d1622; --gris: #8f97b8; --gris-tinte: #23274a;
+      --sombra: 0 1px 2px rgba(0, 0, 0, .3), 0 12px 32px -14px rgba(0, 0, 0, .7);
+    }
+  }
+  * { box-sizing: border-box; }
+  html, body { height: 100%; }
+  body {
+    margin: 0; background: var(--fondo); color: var(--tinta);
+    font: 16px/1.45 "Plus Jakarta Sans", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+  [hidden] { display: none !important; }
+  button, input, select, textarea { font: inherit; color: inherit; }
+  h2 { font-size: 21px; margin: 0 0 4px; letter-spacing: -.01em; }
+  h3 { font-size: 13px; margin: 0 0 12px; color: var(--suave); font-weight: 700; text-transform: uppercase; letter-spacing: .06em; }
+  a { color: var(--marca); font-weight: 600; text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  svg.ico { width: 1.25em; height: 1.25em; flex: none; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+
+  /* ---------- Piezas comunes ---------- */
+  .card { background: var(--tarjeta); border-radius: 22px; padding: 20px; box-shadow: var(--sombra); margin-bottom: 16px; }
+  .btn {
+    display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+    border: 0; border-radius: 14px; padding: 11px 16px; font-weight: 700; font-size: 15px; cursor: pointer;
+    background: var(--marca-tinte); color: var(--marca); transition: transform .08s ease, filter .15s ease;
+  }
+  .btn:hover { filter: brightness(.97); }
+  .btn:active { transform: scale(.98); }
+  .btn:disabled { opacity: .45; cursor: not-allowed; transform: none; }
+  .btn:focus-visible, .enlace:focus-visible, .icono-btn:focus-visible, .tab:focus-visible, summary:focus-visible {
+    outline: 3px solid var(--marca); outline-offset: 2px;
+  }
+  .btn.primario { background: var(--degradado); color: #fff; box-shadow: 0 10px 22px -10px rgba(59, 91, 253, .8); }
+  .btn.verde { background: linear-gradient(135deg, #12b886, #0b8f6a); color: #fff; box-shadow: 0 12px 24px -10px rgba(15, 169, 122, .8); }
+  .btn.ambar { background: var(--ambar-tinte); color: var(--ambar); }
+  .btn.rosa { background: linear-gradient(135deg, #f0476b, #c81e48); color: #fff; box-shadow: 0 12px 24px -10px rgba(229, 54, 90, .8); }
+  .btn.grande { width: 100%; padding: 18px; font-size: 17px; border-radius: 18px; }
+  .btn.mini { padding: 6px 10px; font-size: 13px; border-radius: 10px; font-weight: 600; }
+  .btn.plano { background: transparent; color: var(--suave); }
+  .enlace { background: none; border: 0; padding: 6px; color: var(--marca); font-weight: 600; cursor: pointer; font-size: 14px; }
+  label { display: block; font-size: 13px; font-weight: 600; color: var(--suave); margin: 14px 0 6px; }
+  input, select, textarea {
+    width: 100%; background: var(--campo); border: 1.5px solid var(--linea); border-radius: 13px; padding: 12px 14px; outline: none;
+  }
+  input:focus, select:focus, textarea:focus { border-color: var(--marca); box-shadow: 0 0 0 4px var(--marca-tinte); }
+  textarea { min-height: 84px; resize: vertical; }
+  .pista { font-size: 13px; color: var(--suave); margin: 12px 0 0; }
+  .pill {
+    display: inline-flex; align-items: center; gap: 7px; padding: 5px 12px; border-radius: 999px;
+    font-size: 13px; font-weight: 700; background: var(--gris-tinte); color: var(--gris); white-space: nowrap;
+  }
+  .pill .punto { width: 8px; height: 8px; border-radius: 50%; background: currentColor; }
+  .pill.TRABAJANDO { background: var(--verde-tinte); color: var(--verde); }
+  .pill.EN_PAUSA { background: var(--ambar-tinte); color: var(--ambar); }
+  .pill.TRABAJANDO .punto { animation: latido 1.8s ease-out infinite; }
+  @keyframes latido { 0% { box-shadow: 0 0 0 0 currentColor; } 70%, 100% { box-shadow: 0 0 0 7px transparent; } }
+  @keyframes girar { to { transform: rotate(360deg); } }
+  @media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
+  .etiqueta { display: inline-block; white-space: nowrap; font-size: 12px; font-weight: 700; padding: 2px 8px; border-radius: 999px; background: var(--gris-tinte); color: var(--suave); }
+  .etiqueta.ambar { background: var(--ambar-tinte); color: var(--ambar); }
+  .etiqueta.marca { background: var(--marca-tinte); color: var(--marca); }
+  .vacio { color: var(--suave); font-size: 14px; text-align: center; padding: 18px 8px; margin: 0; }
+
+  /* ---------- Carga y acceso ---------- */
+  .pantalla { min-height: 100%; display: flex; align-items: center; justify-content: center; padding: 24px 16px; }
+  .rueda { width: 38px; height: 38px; border-radius: 50%; border: 4px solid var(--linea); border-top-color: var(--marca); animation: girar .8s linear infinite; }
+  #carga { flex-direction: column; gap: 16px; color: var(--suave); text-align: center; }
+  #acceso { background: radial-gradient(900px 500px at 10% -10%, rgba(15, 181, 174, .22), transparent 60%), radial-gradient(800px 500px at 100% 0%, rgba(124, 58, 237, .22), transparent 60%), var(--fondo); }
+  .acceso-caja { width: 100%; max-width: 400px; }
+  .marca { display: flex; flex-direction: column; align-items: center; gap: 10px; margin-bottom: 22px; text-align: center; }
+  .logo { width: 68px; height: 68px; border-radius: 22px; background: var(--degradado); display: grid; place-items: center; color: #fff; box-shadow: 0 16px 30px -12px rgba(59, 91, 253, .8); }
+  .logo svg { width: 36px; height: 36px; }
+  .marca h1 { margin: 0; font-size: 28px; font-weight: 800; letter-spacing: -.02em; }
+  .marca p { margin: 0; color: var(--suave); font-size: 15px; }
+  .acceso-caja .card { padding: 24px; }
+  .acceso-caja .btn.grande { margin-top: 20px; }
+  .campo-clave { position: relative; }
+  .campo-clave input { padding-right: 62px; }
+  .campo-clave .enlace { position: absolute; right: 6px; top: 50%; transform: translateY(-50%); font-size: 13px; }
+  .centrado { text-align: center; margin-top: 10px; }
+
+  /* ---------- Aplicación ---------- */
+  .hero { background: var(--degradado); color: #fff; padding: 22px 16px 74px; border-radius: 0 0 30px 30px; }
+  .hero-in { max-width: 688px; margin: 0 auto; display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; }
+  .saludo { font-size: 23px; font-weight: 800; letter-spacing: -.02em; }
+  .hero-sub { opacity: .85; font-size: 14px; margin-top: 2px; }
+  .hero-sub::first-letter { text-transform: uppercase; }
+  .icono-btn { width: 42px; height: 42px; flex: none; border-radius: 14px; border: 0; background: rgba(255, 255, 255, .18); color: #fff; display: grid; place-items: center; cursor: pointer; }
+  .icono-btn:hover { background: rgba(255, 255, 255, .28); }
+  main { max-width: 720px; margin: -56px auto 0; padding: 0 16px 110px; }
+
+  .tabs {
+    position: fixed; left: 50%; bottom: 14px; transform: translateX(-50%); z-index: 5;
+    display: flex; gap: 4px; padding: 6px; border-radius: 22px; background: var(--tarjeta);
+    box-shadow: 0 1px 2px rgba(20, 23, 46, .08), 0 18px 40px -14px rgba(20, 23, 46, .45); border: 1px solid var(--linea);
+  }
+  .tab { position: relative; display: flex; align-items: center; gap: 8px; border: 0; background: none; padding: 10px 16px; border-radius: 16px; color: var(--suave); font-weight: 700; font-size: 14px; cursor: pointer; white-space: nowrap; }
+  .tab.activa { background: var(--marca-tinte); color: var(--marca); }
+  .tab .globo { min-width: 20px; height: 20px; padding: 0 6px; border-radius: 999px; background: var(--rosa); color: #fff; font-size: 12px; display: grid; place-items: center; }
+
+  /* ---------- Fichar ---------- */
+  .reloj-card { text-align: center; padding: 26px 20px 20px; }
+  .reloj { font-size: clamp(52px, 17vw, 76px); font-weight: 800; letter-spacing: -.04em; font-variant-numeric: tabular-nums; line-height: 1.05; margin-top: 12px; }
+  .reloj-sub { color: var(--suave); font-size: 14px; font-weight: 600; }
+  .mini-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 20px; padding-top: 18px; border-top: 1px solid var(--linea); }
+  .mini-n { display: block; font-weight: 800; font-size: 18px; font-variant-numeric: tabular-nums; }
+  .mini-l { display: block; color: var(--suave); font-size: 12px; font-weight: 600; }
+  .acciones { display: grid; gap: 10px; margin-bottom: 14px; }
+  .acciones.dos { grid-template-columns: 1fr 1.4fr; }
+  .aviso-ubic { display: flex; gap: 8px; align-items: flex-start; color: var(--suave); font-size: 13px; margin: 0 4px 18px; }
+  .aviso-ubic svg { margin-top: 1px; color: var(--marca); }
+
+  .linea { list-style: none; margin: 0; padding: 0; }
+  .linea li { position: relative; display: flex; flex-wrap: wrap; align-items: center; gap: 4px 10px; padding: 9px 0 9px 26px; }
+  .linea li::before { content: ""; position: absolute; left: 4px; top: 15px; width: 10px; height: 10px; border-radius: 50%; background: var(--gris); box-shadow: 0 0 0 4px var(--tarjeta); z-index: 1; }
+  .linea li::after { content: ""; position: absolute; left: 8px; top: 0; bottom: 0; width: 2px; background: var(--linea); }
+  .linea li:first-child::after { top: 18px; }
+  .linea li:last-child::after { bottom: calc(100% - 18px); }
+  .linea li:only-child::after { display: none; }
+  .linea li.t-ENTRADA::before { background: var(--verde); }
+  .linea li.t-PAUSA_INICIO::before { background: var(--ambar); }
+  .linea li.t-PAUSA_FIN::before { background: var(--marca); }
+  .linea li.t-SALIDA::before { background: var(--rosa); }
+  .linea .hora { font-weight: 800; font-variant-numeric: tabular-nums; min-width: 48px; }
+  .linea .nota { color: var(--suave); font-size: 13px; }
+  .linea .anulado { text-decoration: line-through; opacity: .5; }
+  .linea .fin { margin-left: auto; display: flex; gap: 6px; }
+  @media (max-width: 520px) { .linea .fin { flex-basis: 100%; margin-left: 0; } }
+
+  /* ---------- Jornadas ---------- */
+  .dia { display: flex; align-items: center; gap: 14px; padding: 13px 0; border-top: 1px solid var(--linea); }
+  .dia:first-of-type { border-top: 0; padding-top: 0; }
+  .dia:last-of-type { padding-bottom: 0; }
+  .dia-fecha { width: 54px; flex: none; text-align: center; border-radius: 14px; background: var(--marca-tinte); color: var(--marca); padding: 6px 0; }
+  .dia-fecha b { display: block; font-size: 19px; line-height: 1.1; }
+  .dia-fecha small { font-size: 11px; font-weight: 700; text-transform: uppercase; }
+  .dia-centro { flex: 1; min-width: 0; }
+  .dia-centro strong { display: block; font-variant-numeric: tabular-nums; }
+  .dia-centro small { color: var(--suave); }
+  .dia-horas { font-weight: 800; white-space: nowrap; font-variant-numeric: tabular-nums; }
+
+  /* ---------- Administrador ---------- */
+  .barra { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+  .barra input[type=date] { width: auto; flex: 1 1 150px; }
+  .barra .empuje { margin-left: auto; }
+  .totales { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 16px; }
+  .total { background: var(--tarjeta); border-radius: 18px; padding: 14px; box-shadow: var(--sombra); }
+  .total b { display: block; font-size: 26px; font-weight: 800; line-height: 1.1; }
+  .total span { font-size: 12px; font-weight: 700; color: var(--suave); }
+  .total.v b { color: var(--verde); } .total.a b { color: var(--ambar); } .total.g b { color: var(--gris); }
+  details.emp { padding: 0; overflow: hidden; }
+  details.emp summary { list-style: none; display: flex; align-items: center; gap: 12px; padding: 16px 18px; cursor: pointer; }
+  details.emp summary::-webkit-details-marker { display: none; }
+  .avatar { width: 44px; height: 44px; flex: none; border-radius: 15px; display: grid; place-items: center; font-weight: 800; font-size: 15px; color: #fff; background: hsl(var(--h, 230), 62%, 52%); }
+  .emp-id { flex: 1; min-width: 0; }
+  .emp-id strong { display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .emp-id small { color: var(--suave); }
+  .emp-lado { text-align: right; display: grid; gap: 4px; justify-items: end; }
+  .emp-horas { font-weight: 800; font-variant-numeric: tabular-nums; white-space: nowrap; font-size: 15px; }
+  .emp-cuerpo { padding: 4px 18px 18px; border-top: 1px solid var(--linea); }
+  .emp-meta { font-size: 13px; color: var(--suave); margin: 12px 0 6px; }
+  .botones { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+  .aviso { display: flex; gap: 12px; align-items: flex-start; padding: 13px 0; border-top: 1px solid var(--linea); }
+  .aviso:first-child { border-top: 0; padding-top: 0; }
+  .aviso:last-child { padding-bottom: 0; }
+  .aviso-ico { width: 40px; height: 40px; flex: none; border-radius: 13px; display: grid; place-items: center; background: var(--marca-tinte); color: var(--marca); }
+  .aviso.OLVIDO .aviso-ico { background: var(--ambar-tinte); color: var(--ambar); }
+  .aviso.ACCESO .aviso-ico { background: var(--rosa-tinte); color: var(--rosa); }
+  .aviso.RESUMEN .aviso-ico { background: var(--verde-tinte); color: var(--verde); }
+  .aviso-txt { flex: 1; min-width: 0; font-size: 15px; }
+  .aviso-txt small { display: block; color: var(--suave); font-size: 12px; margin-top: 2px; }
+  .aviso.nuevo .aviso-txt { font-weight: 700; }
+  .aviso .nuevo-punto { width: 9px; height: 9px; border-radius: 50%; background: var(--rosa); margin-top: 8px; flex: none; }
+  .tabla { overflow-x: auto; margin-top: 14px; }
+  table { width: 100%; border-collapse: collapse; font-size: 14px; }
+  th, td { text-align: left; padding: 9px 8px; border-top: 1px solid var(--linea); white-space: nowrap; }
+  th { color: var(--suave); font-size: 12px; text-transform: uppercase; letter-spacing: .05em; border-top: 0; }
+  td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; }
+
+  /* ---------- Diálogos y avisos flotantes ---------- */
+  dialog { border: 0; border-radius: 24px; padding: 24px; background: var(--tarjeta); color: var(--tinta); width: min(430px, 92vw); box-shadow: 0 30px 80px -20px rgba(0, 0, 0, .5); }
+  dialog::backdrop { background: rgba(12, 14, 28, .55); backdrop-filter: blur(3px); }
+  dialog .sub { color: var(--suave); font-size: 14px; }
+  .dlg-pie { display: flex; justify-content: flex-end; gap: 8px; margin-top: 20px; }
+  .credencial { display: flex; align-items: center; justify-content: space-between; gap: 10px; background: var(--campo); border: 1.5px dashed var(--linea); border-radius: 14px; padding: 12px 14px; margin-top: 8px; }
+  .credencial small { display: block; color: var(--suave); font-size: 12px; font-weight: 600; }
+  .credencial code { font: 700 18px/1.3 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; letter-spacing: .04em; user-select: all; overflow-wrap: anywhere; }
+  dialog.ancho { width: min(760px, 94vw); padding: 18px; }
+  #mapa { height: min(56vh, 460px); border-radius: 16px; margin-top: 12px; background: var(--campo); z-index: 0; }
+  #mapa-lista { margin-top: 12px; max-height: 30vh; overflow: auto; }
+  .dos-col { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .dias { display: flex; gap: 6px; flex-wrap: wrap; }
+  .dia-chip { margin: 0; cursor: pointer; }
+  .dia-chip input { position: absolute; opacity: 0; width: 0; height: 0; }
+  .dia-chip span { display: grid; place-items: center; width: 38px; height: 38px; border-radius: 12px; background: var(--campo); border: 1.5px solid var(--linea); font-weight: 700; color: var(--suave); }
+  .dia-chip input:checked + span { background: var(--marca); border-color: var(--marca); color: #fff; }
+  .dia-chip input:focus-visible + span { outline: 3px solid var(--marca); outline-offset: 2px; }
+  #toast { position: fixed; left: 50%; bottom: 92px; transform: translateX(-50%); z-index: 20; background: #14172e; color: #fff; padding: 12px 18px; border-radius: 14px; font-size: 14px; font-weight: 600; max-width: 90vw; text-align: center; box-shadow: 0 16px 40px -12px rgba(0, 0, 0, .6); display: none; }
+  #toast.error { background: #c81e48; }
+  @media (max-width: 420px) { .tab span.txt { display: none; } .tab.activa span.txt { display: inline; } .tab { padding: 10px 14px; } }
+</style>
+</head>
+<body>
+
+<div id="carga" class="pantalla">
+  <div class="rueda"></div>
+  <div id="carga-texto">Cargando…</div>
+  <button class="btn" id="carga-reintentar" hidden>Reintentar</button>
+</div>
+
+<div id="acceso" class="pantalla" hidden>
+  <div class="acceso-caja">
+    <div class="marca">
+      <div class="logo">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.2 2"/></svg>
+      </div>
+      <h1>Fichajes</h1>
+      <p>Control horario del equipo</p>
+    </div>
+
+    <form id="f-login" class="card">
+      <h2>Inicia sesión</h2>
+      <label for="l-usuario">Usuario</label>
+      <input type="text" id="l-usuario" autocomplete="username" autocapitalize="none" spellcheck="false" maxlength="80">
+      <label for="l-clave">Contraseña</label>
+      <div class="campo-clave">
+        <input type="password" id="l-clave" autocomplete="current-password" maxlength="200">
+        <button type="button" class="enlace" data-ver="l-clave">Ver</button>
+      </div>
+      <button type="submit" class="btn primario grande" id="l-entrar">Entrar</button>
+      <p class="pista">Tu responsable te facilita el usuario y la contraseña.</p>
+      <div class="centrado"><button type="button" class="enlace" id="ir-activar" hidden>Activar la cuenta de administrador</button></div>
+    </form>
+
+    <form id="f-activar" class="card" hidden>
+      <h2>Activa la cuenta de administrador</h2>
+      <p class="pista" style="margin-top:6px">Usuario: <strong id="a-usuario"></strong>. El código de activación aparece en el registro de ejecución de la función <strong>instalar</strong>. La contraseña la eliges tú.</p>
+      <label for="a-codigo">Código de activación</label>
+      <input type="text" id="a-codigo" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="XXXX-XXXX" maxlength="20">
+      <label for="a-clave">Contraseña nueva (mínimo 8 caracteres)</label>
+      <div class="campo-clave">
+        <input type="password" id="a-clave" autocomplete="new-password" maxlength="200">
+        <button type="button" class="enlace" data-ver="a-clave">Ver</button>
+      </div>
+      <label for="a-clave2">Repite la contraseña</label>
+      <input type="password" id="a-clave2" autocomplete="new-password" maxlength="200">
+      <button type="submit" class="btn primario grande" id="a-activar">Activar y entrar</button>
+      <div class="centrado"><button type="button" class="enlace" id="ir-login">Ya tengo cuenta</button></div>
+    </form>
+
+    <div id="sin-instalar" class="card" hidden>
+      <h2>Falta la instalación</h2>
+      <p class="pista" style="margin-top:6px">Abre el proyecto en el editor de Apps Script, selecciona la función <strong>instalar</strong> y pulsa Ejecutar. Después recarga esta página.</p>
+    </div>
+  </div>
+</div>
+
+<div id="app" hidden>
+  <header class="hero">
+    <div class="hero-in">
+      <div>
+        <div class="saludo" id="saludo"></div>
+        <div class="hero-sub" id="hero-sub"></div>
+      </div>
+      <button class="icono-btn" id="salir" title="Cerrar sesión" aria-label="Cerrar sesión"></button>
+    </div>
+  </header>
+
+  <main>
+    <section id="vista-fichar" hidden>
+      <div class="card reloj-card">
+        <span class="pill" id="pill"><i class="punto"></i><span id="pill-texto"></span></span>
+        <div class="reloj" id="reloj">0:00:00</div>
+        <div class="reloj-sub">Trabajado hoy</div>
+        <div class="mini-stats">
+          <div><span class="mini-n" id="st-entrada">—</span><span class="mini-l">Entrada</span></div>
+          <div><span class="mini-n" id="st-pausas">0 min</span><span class="mini-l">Pausas</span></div>
+          <div><span class="mini-n" id="st-fichajes">0</span><span class="mini-l">Fichajes</span></div>
+        </div>
+      </div>
+      <div class="acciones" id="acciones"></div>
+      <p class="aviso-ubic"><span id="aviso-ico"></span><span id="aviso-ubicacion"></span></p>
+      <div class="card">
+        <h3>Jornada de hoy</h3>
+        <ol class="linea" id="lista-hoy"></ol>
+      </div>
+    </section>
+
+    <section id="vista-jornadas" hidden>
+      <div class="card">
+        <h3>Últimos 31 días</h3>
+        <div id="lista-jornadas"></div>
+      </div>
+    </section>
+
+    <section id="vista-equipo" hidden>
+      <div class="totales" id="g-totales"></div>
+      <div class="card">
+        <div class="barra">
+          <input type="date" id="g-fecha" aria-label="Día que se muestra">
+          <button class="btn" id="g-actualizar">Actualizar</button>
+          <button class="btn primario empuje" id="g-alta"></button>
+        </div>
+      </div>
+      <div id="g-empleados"></div>
+    </section>
+
+    <section id="vista-avisos" hidden>
+      <div class="card">
+        <div class="barra" style="margin-bottom:16px">
+          <h3 style="margin:0">Avisos</h3>
+          <button class="btn mini empuje" id="av-leer">Marcar todo como leído</button>
+        </div>
+        <div id="av-lista"></div>
+      </div>
+    </section>
+
+    <section id="vista-informes" hidden>
+      <div class="card">
+        <h3>Horas por periodo</h3>
+        <div class="barra">
+          <input type="date" id="r-desde" aria-label="Desde">
+          <input type="date" id="r-hasta" aria-label="Hasta">
+          <button class="btn primario" id="r-calcular">Calcular</button>
+        </div>
+        <div class="tabla" id="r-tabla"></div>
+      </div>
+      <div class="card">
+        <h3>Datos completos</h3>
+        <p class="pista" style="margin:0 0 12px">Fichajes, ubicaciones, auditoría de correcciones y resumen por jornada están en el libro de Google Sheets.</p>
+        <a id="g-hoja" class="btn" href="#" target="_blank" rel="noopener">Abrir hoja de datos</a>
+      </div>
+    </section>
+  </main>
+
+  <nav class="tabs" id="tabs"></nav>
+</div>
+
+<dialog id="dlg">
+  <form id="dlg-form">
+    <h2 id="dlg-titulo"></h2>
+    <div class="sub" id="dlg-persona"></div>
+    <div id="dlg-campos">
+      <label for="dlg-tipo">Tipo de fichaje</label>
+      <select id="dlg-tipo">
+        <option value="ENTRADA">Entrada</option>
+        <option value="PAUSA_INICIO">Inicio de pausa</option>
+        <option value="PAUSA_FIN">Fin de pausa</option>
+        <option value="SALIDA">Salida</option>
+      </select>
+      <label for="dlg-cuando">Fecha y hora</label>
+      <input type="datetime-local" id="dlg-cuando">
+    </div>
+    <label for="dlg-motivo">Motivo (queda registrado en la auditoría)</label>
+    <textarea id="dlg-motivo"></textarea>
+    <div class="dlg-pie">
+      <button type="button" class="btn plano" data-cerrar="dlg">Cancelar</button>
+      <button type="submit" class="btn primario" id="dlg-guardar">Guardar</button>
+    </div>
+  </form>
+</dialog>
+
+<dialog id="dlg-alta">
+  <form id="alta-form">
+    <h2>Nueva persona</h2>
+    <div class="sub">La aplicación genera su usuario y su contraseña.</div>
+    <label for="alta-nombre">Nombre y apellidos</label>
+    <input type="text" id="alta-nombre" maxlength="80" autocomplete="off">
+    <div class="dlg-pie">
+      <button type="button" class="btn plano" data-cerrar="dlg-alta">Cancelar</button>
+      <button type="submit" class="btn primario" id="alta-crear">Crear cuenta</button>
+    </div>
+  </form>
+</dialog>
+
+<dialog id="dlg-horario">
+  <form id="hor-form">
+    <h2>Horario</h2>
+    <div class="sub" id="hor-persona"></div>
+    <div class="dos-col">
+      <div><label for="hor-entrada">Hora de entrada</label><input type="time" id="hor-entrada"></div>
+      <div><label for="hor-salida">Hora de salida</label><input type="time" id="hor-salida"></div>
+    </div>
+    <label>Días de trabajo</label>
+    <div class="dias" id="hor-dias"></div>
+    <p class="pista">La app del móvil avisa a estas horas si la persona aún no ha fichado. Deja las dos horas vacías para quitar el horario.</p>
+    <div class="dlg-pie">
+      <button type="button" class="btn plano" data-cerrar="dlg-horario">Cancelar</button>
+      <button type="submit" class="btn primario" id="hor-guardar">Guardar</button>
+    </div>
+  </form>
+</dialog>
+
+<dialog id="dlg-mapa" class="ancho">
+  <div class="barra">
+    <div>
+      <h2 id="mapa-titulo"></h2>
+      <div class="sub" id="mapa-sub"></div>
+    </div>
+    <button type="button" class="btn plano empuje" data-cerrar="dlg-mapa">Cerrar</button>
+  </div>
+  <div id="mapa"></div>
+  <div id="mapa-lista"></div>
+</dialog>
+
+<dialog id="dlg-confirmar">
+  <h2 id="conf-titulo"></h2>
+  <div class="sub" id="conf-texto"></div>
+  <div class="dlg-pie">
+    <button type="button" class="btn plano" data-cerrar="dlg-confirmar">Cancelar</button>
+    <button type="button" class="btn primario" id="conf-ok"></button>
+  </div>
+</dialog>
+
+<dialog id="dlg-cred">
+  <h2 id="cred-titulo"></h2>
+  <div class="sub" id="cred-persona"></div>
+  <div class="credencial"><div><small>Usuario</small><code id="cred-usuario"></code></div></div>
+  <div class="credencial"><div><small>Contraseña</small><code id="cred-clave"></code></div></div>
+  <p class="pista">La contraseña solo se muestra ahora. Si se pierde, genera otra con «Nueva contraseña».</p>
+  <div class="dlg-pie">
+    <button type="button" class="btn" id="cred-copiar">Copiar datos</button>
+    <button type="button" class="btn primario" data-cerrar="dlg-cred">Hecho</button>
+  </div>
+</dialog>
+
+<div id="toast" role="status"></div>
+
+<script>
+  var S = {
+    token: '', usuario: null, estado: null, desfase: 0, vista: '',
+    timerUbic: null, ultimaUbic: 0, timerAvisos: null,
+    panel: null, dlg: null, abiertos: {}, sinLeer: 0, pendiente: null, horario: null
+  };
+  var MAPA = { mapa: null, capa: null, timer: null, emp: null, ajustado: false };
+  var DIAS = [['1', 'L'], ['2', 'M'], ['3', 'X'], ['4', 'J'], ['5', 'V'], ['6', 'S'], ['7', 'D']];
+  var LEAFLET = 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/';
+  var CLAVE_SESION = 'fichajes.sesion';
+  var ESTADOS = { FUERA: 'Fuera de jornada', TRABAJANDO: 'Trabajando', EN_PAUSA: 'En pausa' };
+  var TABS = {
+    EMPLEADO: [['fichar', 'Fichar', 'reloj'], ['jornadas', 'Mis jornadas', 'calendario']],
+    ADMIN: [['equipo', 'Equipo', 'equipo'], ['avisos', 'Avisos', 'campana'], ['informes', 'Informes', 'grafico']]
+  };
+  var VISTAS = ['fichar', 'jornadas', 'equipo', 'avisos', 'informes'];
+  var ICONOS = {
+    reloj: '<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.2 2"/>',
+    calendario: '<rect x="3" y="5" width="18" height="16" rx="3"/><path d="M3 10h18M8 3v4M16 3v4"/>',
+    equipo: '<circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c0-3.6 2.9-6 6.5-6s6.5 2.4 6.5 6"/><circle cx="17.5" cy="9" r="2.5"/><path d="M17.5 14.2c2.4.4 4 2.3 4 5.3"/>',
+    campana: '<path d="M6 9a6 6 0 1 1 12 0c0 5 2 6 2 7H4c0-1 2-2 2-7z"/><path d="M10 20a2 2 0 0 0 4 0"/>',
+    grafico: '<path d="M5 20v-8M12 20V5M19 20v-5M3 20h18"/>',
+    salir: '<path d="M14 4h4a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-4"/><path d="M9 8l-4 4 4 4M5 12h10"/>',
+    entrada: '<path d="M10 4H6a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h4"/><path d="M15 8l4 4-4 4M19 12H9"/>',
+    pausa: '<rect x="6" y="5" width="4" height="14" rx="1"/><rect x="14" y="5" width="4" height="14" rx="1"/>',
+    seguir: '<path d="M7 5l12 7-12 7z"/>',
+    salida: '<rect x="6" y="6" width="12" height="12" rx="2.5"/>',
+    pin: '<path d="M12 21s7-6.2 7-11a7 7 0 1 0-14 0c0 4.8 7 11 7 11z"/><circle cx="12" cy="10" r="2.5"/>',
+    mas: '<path d="M12 5v14M5 12h14"/>',
+    llave: '<circle cx="8" cy="15" r="4"/><path d="M11 12l9-9M17 6l3 3M14 9l2 2"/>'
+  };
+
+  function $(id) { return document.getElementById(id); }
+  function ico(nombre) { return '<svg class="ico" viewBox="0 0 24 24" aria-hidden="true">' + ICONOS[nombre] + '</svg>'; }
+
+  function esc(v) {
+    return String(v === null || v === undefined ? '' : v).replace(/[&<>"']/g, function (c) {
+      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+    });
+  }
+
+  function mensajeDe(e) {
+    return String(e && e.message ? e.message : e).replace(/^Error:\s*/, '');
+  }
+
+  function invocar(fn, args) {
+    return new Promise(function (ok, ko) {
+      var r = google.script.run.withSuccessHandler(ok).withFailureHandler(function (e) { ko(new Error(mensajeDe(e))); });
+      r[fn].apply(r, args);
+    });
+  }
+
+  // Llamadas sin sesión: estado de la instalación, inicio de sesión y activación.
+  function llamarPublico(fn) {
+    return invocar(fn, Array.prototype.slice.call(arguments, 1));
+  }
+
+  // El resto de llamadas llevan el testigo de sesión como primer argumento.
+  function llamar(fn) {
+    var args = [S.token].concat(Array.prototype.slice.call(arguments, 1));
+    return invocar(fn, args).catch(function (err) {
+      if (err.message.indexOf('ACCESO:') === 0) {
+        var msg = err.message.replace(/^ACCESO:\s*/, '');
+        msg = msg.charAt(0).toUpperCase() + msg.slice(1);
+        cerrarSesion();
+        throw new Error(msg);
+      }
+      throw err;
+    });
+  }
+
+  var toastTimer;
+  function toast(texto, esError) {
+    var t = $('toast');
+    t.textContent = texto;
+    t.className = esError ? 'error' : '';
+    t.style.display = 'block';
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function () { t.style.display = 'none'; }, esError ? 6000 : 3000);
+  }
+
+  function hms(ms) {
+    var s = Math.max(0, Math.floor(ms / 1000));
+    var h = Math.floor(s / 3600), m = Math.floor((s % 3600) / 60), seg = s % 60;
+    return h + ':' + (m < 10 ? '0' : '') + m + ':' + (seg < 10 ? '0' : '') + seg;
+  }
+
+  function hm(ms) {
+    var min = Math.max(0, Math.round(ms / 60000));
+    return Math.floor(min / 60) + ' h ' + (min % 60 < 10 ? '0' : '') + (min % 60) + ' min';
+  }
+
+  function fechaLarga(iso) {
+    var p = iso.split('-');
+    return new Date(Date.UTC(+p[0], +p[1] - 1, +p[2])).toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long', timeZone: 'UTC' });
+  }
+
+  function fechaCorta(iso) {
+    var p = iso.split('-');
+    var d = new Date(Date.UTC(+p[0], +p[1] - 1, +p[2]));
+    return {
+      dia: p[2].replace(/^0/, ''),
+      mes: d.toLocaleDateString('es-ES', { month: 'short', timeZone: 'UTC' }).replace('.', ''),
+      semana: d.toLocaleDateString('es-ES', { weekday: 'long', timeZone: 'UTC' })
+    };
+  }
+
+  function hace(ms) {
+    var min = Math.round(ms / 60000);
+    if (min < 1) return 'ahora mismo';
+    if (min < 60) return 'hace ' + min + ' min';
+    var h = Math.floor(min / 60);
+    return h < 24 ? 'hace ' + h + ' h ' + (min % 60) + ' min' : 'hace más de un día';
+  }
+
+  function horarioTexto(h) {
+    if (!h) return 'Sin horario';
+    return (h.entrada || '--:--') + ' – ' + (h.salida || '--:--') + ' · ' +
+      DIAS.filter(function (d) { return h.dias.indexOf(d[0]) >= 0; }).map(function (d) { return d[1]; }).join(' ');
+  }
+
+  function enlaceMapa(lat, lng, texto) {
+    return '<a target="_blank" rel="noopener" href="https://www.google.com/maps?q=' +
+      encodeURIComponent(lat + ',' + lng) + '">' + esc(texto) + '</a>';
+  }
+
+  function posicion() {
+    return new Promise(function (ok) {
+      if (!navigator.geolocation) { ok(null); return; }
+      navigator.geolocation.getCurrentPosition(
+        function (p) { ok({ lat: p.coords.latitude, lng: p.coords.longitude, prec: p.coords.accuracy }); },
+        function () { ok(null); },
+        { enableHighAccuracy: true, timeout: 15000, maximumAge: 30000 }
+      );
+    });
+  }
+
+  /* ---------------- Sesión ---------------- */
+
+  function leerSesion() {
+    try { return localStorage.getItem(CLAVE_SESION) || ''; } catch (e) { return ''; }
+  }
+
+  function recordarSesion(token) {
+    try {
+      if (token) localStorage.setItem(CLAVE_SESION, token); else localStorage.removeItem(CLAVE_SESION);
+    } catch (e) {}
+  }
+
+  function pantalla(id) {
+    ['carga', 'acceso', 'app'].forEach(function (p) { $(p).hidden = p !== id; });
+  }
+
+  function formulario(id) {
+    ['f-login', 'f-activar', 'sin-instalar'].forEach(function (f) { $(f).hidden = f !== id; });
+  }
+
+  function cerrarSesion() {
+    S.token = '';
+    S.usuario = null;
+    S.estado = null;
+    S.panel = null;
+    S.abiertos = {};
+    recordarSesion('');
+    clearInterval(S.timerUbic);
+    clearInterval(S.timerAvisos);
+    var abiertos = document.querySelectorAll('dialog[open]');
+    for (var i = 0; i < abiertos.length; i++) abiertos[i].close();
+    mostrarAcceso();
+  }
+
+  function mostrarAcceso() {
+    $('l-clave').value = '';
+    $('l-entrar').disabled = false;
+    formulario('f-login');
+    pantalla('acceso');
+    llamarPublico('getInicio').then(function (i) {
+      if (S.token) return;
+      $('a-usuario').textContent = i.adminUsuario;
+      $('ir-activar').hidden = !i.adminPendiente;
+      if (!i.instalada) formulario('sin-instalar');
+      else if (i.adminPendiente) formulario('f-activar');
+    }).catch(function () {});
+  }
+
+  // Tras iniciar sesión o activar la cuenta: guarda el testigo y carga el estado.
+  function abrirSesion(r) {
+    S.token = r.token;
+    recordarSesion(r.token);
+    return llamar('getEstado').then(entrar);
+  }
+
+  function entrar(e) {
+    S.usuario = e.usuario;
+    var admin = e.usuario.rol === 'ADMIN';
+    var hora = new Date().getHours();
+    $('saludo').textContent = (hora < 6 ? 'Buenas noches' : hora < 14 ? 'Buenos días' : hora < 21 ? 'Buenas tardes' : 'Buenas noches') +
+      ', ' + e.usuario.nombre.split(' ')[0];
+    $('hero-sub').textContent = admin ? 'Panel de administración' : new Date().toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long' });
+
+    $('tabs').innerHTML = TABS[admin ? 'ADMIN' : 'EMPLEADO'].map(function (t) {
+      return '<button class="tab" data-vista="' + t[0] + '">' + ico(t[2]) + '<span class="txt">' + t[1] + '</span>' +
+        (t[0] === 'avisos' ? '<span class="globo" id="globo" hidden></span>' : '') + '</button>';
+    }).join('');
+
+    pantalla('app');
+    clearInterval(S.timerAvisos);
+    if (admin) {
+      pintarGlobo(e.avisosSinLeer);
+      // Cada minuto: con el panel de equipo a la vista se recarga entero (estados y
+      // últimas posiciones); en el resto de pestañas solo el contador de avisos.
+      S.timerAvisos = setInterval(function () {
+        if (document.hidden || !S.token) return;
+        if (S.vista === 'equipo') {
+          if (!document.querySelector('dialog[open]')) cargarPanel();
+        } else {
+          llamar('getEstado').then(function (x) { pintarGlobo(x.avisosSinLeer); }).catch(function () {});
+        }
+      }, 60000);
+      irA('equipo');
+    } else {
+      pintarEstado(e);
+      irA('fichar');
+    }
+  }
+
+  function irA(vista) {
+    S.vista = vista;
+    var tabs = document.querySelectorAll('.tab');
+    for (var i = 0; i < tabs.length; i++) tabs[i].classList.toggle('activa', tabs[i].getAttribute('data-vista') === vista);
+    VISTAS.forEach(function (v) { $('vista-' + v).hidden = v !== vista; });
+    window.scrollTo(0, 0);
+    if (vista === 'jornadas') cargarJornadas();
+    if (vista === 'equipo') cargarPanel();
+    if (vista === 'avisos') cargarAvisos();
+    if (vista === 'informes') prepararInformes();
+  }
+
+  /* ---------------- Fichar ---------------- */
+
+  function pintarEstado(e) {
+    S.estado = e;
+    S.desfase = e.ahora - Date.now();
+
+    $('pill').className = 'pill ' + e.estado;
+    $('pill-texto').textContent = ESTADOS[e.estado];
+
+    var botones = {
+      FUERA: [['ENTRADA', 'Fichar entrada', 'verde', 'entrada']],
+      TRABAJANDO: [['PAUSA_INICIO', 'Pausa', 'ambar', 'pausa'], ['SALIDA', 'Fichar salida', 'rosa', 'salida']],
+      EN_PAUSA: [['PAUSA_FIN', 'Volver al trabajo', 'primario', 'seguir']]
+    }[e.estado];
+    $('acciones').className = 'acciones' + (botones.length === 2 ? ' dos' : '');
+    $('acciones').innerHTML = botones.map(function (b) {
+      return '<button class="btn grande ' + b[2] + '" data-tipo="' + b[0] + '">' + ico(b[3]) + b[1] + '</button>';
+    }).join('');
+
+    var primera = e.fichajes.filter(function (f) { return f.tipo === 'ENTRADA'; })[0];
+    $('st-entrada').textContent = primera ? primera.hora : '—';
+    $('st-fichajes').textContent = e.fichajes.length;
+
+    $('lista-hoy').innerHTML = e.fichajes.map(function (f) {
+      return '<li class="t-' + esc(f.tipo) + '"><span class="hora">' + esc(f.hora) + '</span><span>' + esc(f.etiqueta) + '</span>' +
+        (f.fecha !== e.hoy ? '<span class="nota">' + esc(fechaLarga(f.fecha)) + '</span>' : '') +
+        (f.origen === 'ADMIN' ? '<span class="etiqueta marca">Corregido</span>' : '') + '</li>';
+    }).join('') || '<p class="vacio">Todavía no has fichado hoy.</p>';
+
+    var seg = e.config.segundosEntreUbicaciones;
+    var pausas = e.config.seguimientoEnPausas ? 'Se detiene al fichar la salida.' : 'Se detiene en las pausas y al fichar la salida.';
+    $('aviso-ico').innerHTML = ico('pin');
+    $('aviso-ubicacion').textContent = e.estado === 'TRABAJANDO'
+      ? 'Ubicación activa: se registra tu posición cada ' + seg + ' segundos mientras esta página está abierta y a la vista. ' + pausas + ' Con el móvil bloqueado solo registra la app Android.'
+      : 'Al fichar se registra tu ubicación. Durante la jornada se guarda además cada ' + seg + ' segundos; para que siga con el móvil bloqueado, usa la app Android.';
+
+    tic();
+    programarSeguimiento();
+  }
+
+  function tic() {
+    var e = S.estado;
+    if (!e) return;
+    var ahora = Date.now() + S.desfase;
+    var trabajo = e.trabajoMs + (e.estado === 'TRABAJANDO' && e.enCursoDesde ? ahora - e.enCursoDesde : 0);
+    var pausa = e.pausaMs + (e.estado === 'EN_PAUSA' && e.pausaDesde ? ahora - e.pausaDesde : 0);
+    $('reloj').textContent = hms(trabajo);
+    $('st-pausas').textContent = Math.round(pausa / 60000) + ' min';
+  }
+  setInterval(tic, 1000);
+
+  function fichar(tipo) {
+    var botones = document.querySelectorAll('#acciones .btn');
+    for (var i = 0; i < botones.length; i++) botones[i].disabled = true;
+    toast('Obteniendo ubicación…');
+    posicion().then(function (pos) {
+      if (!pos && S.estado.config.ubicacionObligatoria) {
+        throw new Error('No se ha podido obtener tu ubicación. Activa el permiso de ubicación del navegador y vuelve a intentarlo.');
+      }
+      if (pos) S.ultimaUbic = Date.now();
+      return llamar('fichar', tipo, pos);
+    }).then(function (e) {
+      pintarEstado(e);
+      toast('Fichaje registrado.');
+    }).catch(function (err) {
+      toast(err.message, true);
+      if (S.estado) pintarEstado(S.estado);
+    });
+  }
+
+  /* ---------------- Seguimiento de ubicación ---------------- */
+
+  function intervaloUbic() { return S.estado.config.segundosEntreUbicaciones * 1000; }
+
+  function programarSeguimiento() {
+    clearInterval(S.timerUbic);
+    S.timerUbic = null;
+    if (!S.estado || S.estado.estado !== 'TRABAJANDO') return;
+    S.timerUbic = setInterval(enviarUbicacion, intervaloUbic());
+    if (Date.now() - S.ultimaUbic > intervaloUbic()) enviarUbicacion();
+  }
+
+  function enviarUbicacion() {
+    if (!S.estado || S.estado.estado !== 'TRABAJANDO') return;
+    S.ultimaUbic = Date.now();
+    posicion().then(function (pos) {
+      if (pos && S.token) llamar('registrarUbicaciones', [pos]).catch(function () {});
+    });
+  }
+
+  document.addEventListener('visibilitychange', function () {
+    if (!document.hidden && S.estado && S.estado.estado === 'TRABAJANDO' &&
+        Date.now() - S.ultimaUbic > intervaloUbic()) {
+      enviarUbicacion();
+    }
+  });
+
+  /* ---------------- Mis jornadas ---------------- */
+
+  function cargarJornadas() {
+    $('lista-jornadas').innerHTML = '<p class="vacio">Cargando…</p>';
+    llamar('getMisJornadas').then(function (js) {
+      $('lista-jornadas').innerHTML = js.map(function (j) {
+        var f = fechaCorta(j.fecha);
+        return '<div class="dia"><div class="dia-fecha"><b>' + esc(f.dia) + '</b><small>' + esc(f.mes) + '</small></div>' +
+          '<div class="dia-centro"><strong>' + esc(j.entrada) + ' – ' + esc(j.salida || 'sin salida') + '</strong>' +
+          '<small>' + esc(f.semana) + ' · ' + Math.round(j.pausaMs / 60000) + ' min de pausa</small> ' +
+          (j.abierta ? '<span class="etiqueta ambar">Incompleta</span> ' : '') +
+          (j.corregida ? '<span class="etiqueta marca">Corregida</span>' : '') + '</div>' +
+          '<div class="dia-horas">' + hm(j.trabajoMs) + '</div></div>';
+      }).join('') || '<p class="vacio">Sin jornadas registradas.</p>';
+    }).catch(function (err) { toast(err.message, true); });
+  }
+
+  /* ---------------- Administrador: equipo ---------------- */
+
+  function pintarGlobo(n) {
+    S.sinLeer = n || 0;
+    var g = $('globo');
+    if (!g) return;
+    g.hidden = !S.sinLeer;
+    g.textContent = S.sinLeer > 99 ? '99+' : S.sinLeer;
+  }
+
+  function cargarPanel() {
+    if (!S.panel) $('g-empleados').innerHTML = '<p class="vacio">Cargando…</p>';
+    llamar('getPanel', $('g-fecha').value).then(pintarPanel).catch(function (err) { toast(err.message, true); });
+  }
+
+  function iniciales(nombre) {
+    var p = nombre.trim().split(/\s+/);
+    return ((p[0] || '').charAt(0) + (p[1] || '').charAt(0)).toUpperCase() || '?';
+  }
+
+  function tono(texto) {
+    var h = 0;
+    for (var i = 0; i < texto.length; i++) h = (h * 31 + texto.charCodeAt(i)) % 360;
+    return h;
+  }
+
+  function pintarPanel(p) {
+    S.panel = p;
+    $('g-fecha').value = p.fecha;
+    $('g-hoja').href = p.urlHoja;
+    $('g-alta').innerHTML = ico('mas') + 'Nueva persona';
+    pintarGlobo(p.avisosSinLeer);
+
+    var n = { TRABAJANDO: 0, EN_PAUSA: 0, FUERA: 0 };
+    p.empleados.forEach(function (e) { n[e.estado]++; });
+    $('g-totales').innerHTML =
+      '<div class="total v"><b>' + n.TRABAJANDO + '</b><span>Trabajando</span></div>' +
+      '<div class="total a"><b>' + n.EN_PAUSA + '</b><span>En pausa</span></div>' +
+      '<div class="total g"><b>' + n.FUERA + '</b><span>Fuera</span></div>';
+
+    $('g-empleados').innerHTML = p.empleados.map(function (e, i) {
+      var fichajes = e.fichajes.map(function (f) {
+        var anulado = f.estado === 'ANULADO';
+        return '<li class="t-' + esc(f.tipo) + '"><span class="hora' + (anulado ? ' anulado' : '') + '">' + esc(f.hora) + '</span>' +
+          '<span class="' + (anulado ? 'anulado' : '') + '">' + esc(f.etiqueta) + '</span>' +
+          (f.lat !== '' ? enlaceMapa(f.lat, f.lng, 'mapa') : '<span class="nota">sin ubicación</span>') +
+          (anulado ? '<span class="etiqueta">Anulado</span>' : (f.origen === 'ADMIN' ? '<span class="etiqueta marca">Corregido</span>' : '')) +
+          (f.nota ? '<span class="nota">' + esc(f.nota) + '</span>' : '') +
+          (anulado ? '' : '<span class="fin">' +
+            '<button class="btn mini" data-accion="editar" data-emp="' + i + '" data-id="' + esc(f.id) + '">Editar</button>' +
+            '<button class="btn mini plano" data-accion="anular" data-emp="' + i + '" data-id="' + esc(f.id) + '">Anular</button></span>') +
+          '</li>';
+      }).join('');
+
+      return '<details class="card emp" data-usuario="' + esc(e.usuario) + '"' + (S.abiertos[e.usuario] ? ' open' : '') + '>' +
+        '<summary><span class="avatar" style="--h:' + tono(e.usuario) + '">' + esc(iniciales(e.nombre)) + '</span>' +
+        '<span class="emp-id"><strong>' + esc(e.nombre) + '</strong><small>' + esc(e.usuario) + (e.activo ? '' : ' · desactivado') + '</small></span>' +
+        '<span class="emp-lado"><span class="emp-horas">' + hm(e.trabajoMs) + '</span>' +
+        '<span class="pill ' + esc(e.estado) + '"><i class="punto"></i>' + esc(ESTADOS[e.estado]) + '</span></span></summary>' +
+        '<div class="emp-cuerpo">' +
+        '<p class="emp-meta">' + esc(fechaLarga(p.fecha)) + ' · ' + Math.round(e.pausaMs / 60000) + ' min de pausa' +
+        (e.incompleta ? ' · <span class="etiqueta ambar">Jornada sin cerrar</span>' : '') +
+        '<br>Horario: ' + esc(horarioTexto(e.horario)) +
+        '<br>Última ubicación: ' + (e.ultimaUbicacion
+          ? enlaceMapa(e.ultimaUbicacion.lat, e.ultimaUbicacion.lng, e.ultimaUbicacion.texto) + ' (' + hace(p.ahora - e.ultimaUbicacion.ts) + ')'
+          : 'sin datos') +
+        (sinSenal(e, p) ? ' <span class="etiqueta ambar">Sin señal reciente</span>' : '') + '</p>' +
+        (fichajes ? '<ol class="linea">' + fichajes + '</ol>' : '<p class="vacio">Sin fichajes este día.</p>') +
+        '<div class="botones">' +
+        '<button class="btn mini" data-accion="crear" data-emp="' + i + '">' + ico('mas') + 'Añadir fichaje</button>' +
+        '<button class="btn mini" data-accion="mapa" data-emp="' + i + '">' + ico('pin') + 'Mapa del día</button>' +
+        '<button class="btn mini" data-accion="horario" data-emp="' + i + '">' + ico('reloj') + 'Horario</button>' +
+        '<button class="btn mini" data-accion="clave" data-emp="' + i + '">' + ico('llave') + 'Nueva contraseña</button></div>' +
+        '</div></details>';
+    }).join('') || '<div class="card"><p class="vacio">Aún no hay nadie en el equipo. Pulsa «Nueva persona» para crear la primera cuenta.</p></div>';
+  }
+
+  function abrirDialogo(modo, emp, fichaje) {
+    S.dlg = { modo: modo, usuario: emp.usuario, id: fichaje ? fichaje.id : '' };
+    $('dlg-titulo').textContent = modo === 'crear' ? 'Añadir fichaje' : (modo === 'editar' ? 'Corregir fichaje' : 'Anular fichaje');
+    $('dlg-persona').textContent = emp.nombre + (fichaje ? ' · ' + fichaje.etiqueta + ' ' + fichaje.hora : '');
+    $('dlg-campos').hidden = modo === 'anular';
+    $('dlg-tipo').value = fichaje ? fichaje.tipo : 'ENTRADA';
+    $('dlg-cuando').value = fichaje ? fichaje.local : S.panel.fecha + 'T09:00';
+    $('dlg-motivo').value = '';
+    $('dlg-guardar').textContent = modo === 'anular' ? 'Anular fichaje' : 'Guardar';
+    $('dlg-guardar').disabled = false;
+    $('dlg').showModal();
+  }
+
+  function enviarDialogo(ev) {
+    ev.preventDefault();
+    var d = S.dlg, motivo = $('dlg-motivo').value;
+    $('dlg-guardar').disabled = true;
+    var peticion = d.modo === 'anular'
+      ? llamar('anularFichaje', d.id, motivo, S.panel.fecha)
+      : llamar('guardarFichaje', {
+          id: d.id, usuario: d.usuario, tipo: $('dlg-tipo').value,
+          fechaHora: $('dlg-cuando').value, motivo: motivo, fechaPanel: S.panel.fecha
+        });
+    peticion.then(function (p) {
+      $('dlg').close();
+      pintarPanel(p);
+      toast('Cambio guardado y anotado en la auditoría.');
+    }).catch(function (err) {
+      $('dlg-guardar').disabled = false;
+      toast(err.message, true);
+    });
+  }
+
+  // Trabajando hoy y sin posición en los últimos cinco minutos.
+  function sinSenal(e, p) {
+    return p.fecha === p.hoy && e.estado === 'TRABAJANDO' &&
+      (!e.ultimaUbicacion || p.ahora - e.ultimaUbicacion.ts > 5 * 60000);
+  }
+
+  /* ---------------- Administrador: mapa del recorrido ---------------- */
+
+  function cargarLeaflet() {
+    if (window.L) return Promise.resolve();
+    return new Promise(function (ok, ko) {
+      var css = document.createElement('link');
+      css.rel = 'stylesheet';
+      css.href = LEAFLET + 'leaflet.min.css';
+      document.head.appendChild(css);
+      var js = document.createElement('script');
+      js.src = LEAFLET + 'leaflet.min.js';
+      js.onload = function () { ok(); };
+      js.onerror = function () { js.remove(); ko(new Error('No se ha podido cargar el mapa.')); };
+      document.head.appendChild(js);
+    });
+  }
+
+  function abrirMapa(emp) {
+    MAPA.emp = emp;
+    MAPA.ajustado = false;
+    $('mapa-titulo').textContent = emp.nombre;
+    $('mapa-sub').textContent = 'Cargando recorrido…';
+    $('mapa-lista').innerHTML = '';
+    $('dlg-mapa').showModal();
+    refrescarMapa();
+    clearInterval(MAPA.timer);
+    // El día en curso se actualiza solo mientras el mapa está abierto.
+    if (S.panel.fecha === S.panel.hoy) MAPA.timer = setInterval(refrescarMapa, 30000);
+  }
+
+  function refrescarMapa() {
+    if (!$('dlg-mapa').open || !S.token) { clearInterval(MAPA.timer); return; }
+    llamar('getUbicaciones', MAPA.emp.usuario, S.panel.fecha).then(pintarRecorrido).catch(function (err) {
+      $('mapa-sub').textContent = err.message;
+    });
+  }
+
+  function listaPuntos(puntos) {
+    return '<ol class="linea">' + puntos.slice(-40).reverse().map(function (u) {
+      return '<li><span class="hora">' + esc(u.hora) + '</span><span>' + esc(u.origen) + '</span>' +
+        enlaceMapa(u.lat, u.lng, Number(u.lat).toFixed(5) + ', ' + Number(u.lng).toFixed(5)) +
+        (u.prec !== '' ? '<span class="nota">±' + esc(u.prec) + ' m</span>' : '') + '</li>';
+    }).join('') + '</ol>';
+  }
+
+  function pintarRecorrido(r) {
+    if (!MAPA.emp || r.usuario !== MAPA.emp.usuario) return;
+    var puntos = r.puntos;
+    if (!puntos.length) {
+      $('mapa').hidden = true;
+      $('mapa-sub').textContent = fechaLarga(r.fecha);
+      $('mapa-lista').innerHTML = '<p class="vacio">Sin ubicaciones registradas este día.</p>';
+      return;
+    }
+    var ultimo = puntos[puntos.length - 1];
+    $('mapa-sub').innerHTML = esc(fechaLarga(r.fecha)) + ' · ' + puntos.length + (puntos.length === 1 ? ' punto' : ' puntos') +
+      ' · último a las ' + esc(ultimo.hora) + (r.fecha === S.panel.hoy ? ' (' + hace(r.ahora - ultimo.ts) + ')' : '') +
+      ' · ' + enlaceMapa(ultimo.lat, ultimo.lng, 'abrir en Google Maps');
+
+    cargarLeaflet().then(function () {
+      $('mapa').hidden = false;
+      $('mapa-lista').innerHTML = '';
+      if (!MAPA.mapa) {
+        MAPA.mapa = L.map('mapa');
+        L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+          maxZoom: 19, attribution: '&copy; colaboradores de OpenStreetMap'
+        }).addTo(MAPA.mapa);
+        MAPA.capa = L.layerGroup().addTo(MAPA.mapa);
+      }
+      MAPA.capa.clearLayers();
+      var trazo = puntos.map(function (u) { return [Number(u.lat), Number(u.lng)]; });
+      L.polyline(trazo, { color: '#3b5bfd', weight: 4, opacity: .85 }).addTo(MAPA.capa);
+      var colores = { 'Entrada': '#0fa97a', 'Inicio de pausa': '#d98a06', 'Fin de pausa': '#3b5bfd', 'Salida': '#14172e' };
+      puntos.forEach(function (u) {
+        if (u.origen === 'Seguimiento') return;
+        L.circleMarker([Number(u.lat), Number(u.lng)], { radius: 7, color: '#fff', weight: 2, fillColor: colores[u.origen] || '#8891ad', fillOpacity: 1 })
+          .bindPopup(esc(u.origen) + ' · ' + esc(u.hora)).addTo(MAPA.capa);
+      });
+      L.circleMarker([Number(ultimo.lat), Number(ultimo.lng)], { radius: 9, color: '#fff', weight: 3, fillColor: '#e5365a', fillOpacity: 1 })
+        .bindPopup('Última posición · ' + esc(ultimo.hora)).addTo(MAPA.capa);
+      MAPA.mapa.invalidateSize();
+      if (!MAPA.ajustado) {
+        MAPA.mapa.fitBounds(L.latLngBounds(trazo).pad(0.2), { maxZoom: 17 });
+        MAPA.ajustado = true;
+      }
+    }).catch(function () {
+      // Sin acceso al servicio de mapas: se muestran los últimos puntos como lista.
+      $('mapa').hidden = true;
+      $('mapa-lista').innerHTML = listaPuntos(puntos);
+    });
+  }
+
+  /* ---------------- Administrador: horario ---------------- */
+
+  function abrirHorario(emp) {
+    S.horario = emp.usuario;
+    var h = emp.horario || { entrada: '', salida: '', dias: '12345' };
+    $('hor-persona').textContent = emp.nombre;
+    $('hor-entrada').value = h.entrada;
+    $('hor-salida').value = h.salida;
+    $('hor-dias').innerHTML = DIAS.map(function (d) {
+      return '<label class="dia-chip" title="' + d[1] + '"><input type="checkbox" value="' + d[0] + '"' +
+        (h.dias.indexOf(d[0]) >= 0 ? ' checked' : '') + '><span>' + d[1] + '</span></label>';
+    }).join('');
+    $('hor-guardar').disabled = false;
+    $('dlg-horario').showModal();
+  }
+
+  function guardarHorario(ev) {
+    ev.preventDefault();
+    var marcados = $('hor-dias').querySelectorAll('input:checked'), dias = '';
+    for (var i = 0; i < marcados.length; i++) dias += marcados[i].value;
+    $('hor-guardar').disabled = true;
+    llamar('guardarHorario', S.horario, {
+      entrada: $('hor-entrada').value, salida: $('hor-salida').value, dias: dias, fechaPanel: S.panel.fecha
+    }).then(function (p) {
+      $('dlg-horario').close();
+      pintarPanel(p);
+      toast('Horario guardado.');
+    }).catch(function (err) {
+      $('hor-guardar').disabled = false;
+      toast(err.message, true);
+    });
+  }
+
+  /* ---------------- Administrador: cuentas ---------------- */
+
+  function mostrarCredenciales(titulo, r) {
+    $('cred-titulo').textContent = titulo;
+    $('cred-persona').textContent = r.nombre;
+    $('cred-usuario').textContent = r.usuario;
+    $('cred-clave').textContent = r.clave;
+    $('dlg-cred').showModal();
+  }
+
+  function crearEmpleado(ev) {
+    ev.preventDefault();
+    $('alta-crear').disabled = true;
+    llamar('crearEmpleado', $('alta-nombre').value).then(function (r) {
+      $('dlg-alta').close();
+      S.abiertos[r.usuario] = true;
+      pintarPanel(r.panel);
+      mostrarCredenciales('Cuenta creada', r);
+    }).catch(function (err) {
+      toast(err.message, true);
+    }).then(function () { $('alta-crear').disabled = false; });
+  }
+
+  function pedirClaveNueva(emp) {
+    $('conf-titulo').textContent = 'Nueva contraseña';
+    $('conf-texto').textContent = 'Se generará una contraseña nueva para ' + emp.nombre +
+      '. La actual dejará de funcionar y se cerrarán sus sesiones abiertas.';
+    $('conf-ok').textContent = 'Generar';
+    $('conf-ok').disabled = false;
+    S.pendiente = function () {
+      $('conf-ok').disabled = true;
+      llamar('restablecerClave', emp.usuario).then(function (r) {
+        $('dlg-confirmar').close();
+        mostrarCredenciales('Contraseña nueva', r);
+      }).catch(function (err) {
+        $('conf-ok').disabled = false;
+        toast(err.message, true);
+      });
+    };
+    $('dlg-confirmar').showModal();
+  }
+
+  function copiarCredenciales() {
+    var texto = 'Usuario: ' + $('cred-usuario').textContent + '\nContraseña: ' + $('cred-clave').textContent;
+    var hecho = function () { toast('Datos copiados.'); };
+    var manual = function () { toast('No se ha podido copiar. Selecciona el texto a mano.', true); };
+    try {
+      navigator.clipboard.writeText(texto).then(hecho, manual);
+    } catch (e) { manual(); }
+  }
+
+  /* ---------------- Administrador: avisos e informes ---------------- */
+
+  function cargarAvisos() {
+    if (!$('av-lista').innerHTML) $('av-lista').innerHTML = '<p class="vacio">Cargando…</p>';
+    llamar('getAvisos').then(pintarAvisos).catch(function (err) { toast(err.message, true); });
+  }
+
+  function pintarAvisos(r) {
+    pintarGlobo(r.sinLeer);
+    $('av-leer').disabled = !r.sinLeer;
+    var iconos = { FICHAJE: 'reloj', OLVIDO: 'campana', ACCESO: 'llave', RESUMEN: 'grafico' };
+    $('av-lista').innerHTML = r.avisos.map(function (a) {
+      return '<div class="aviso ' + esc(a.tipo) + (a.leido ? '' : ' nuevo') + '">' +
+        '<span class="aviso-ico">' + ico(iconos[a.tipo] || 'campana') + '</span>' +
+        '<span class="aviso-txt">' + esc(a.texto) + '<small>' + esc(a.cuando) + '</small></span>' +
+        (a.leido ? '' : '<span class="nuevo-punto" title="Sin leer"></span>') + '</div>';
+    }).join('') || '<p class="vacio">No hay avisos.</p>';
+  }
+
+  function prepararInformes() {
+    if ($('r-desde').value) return;
+    var hoy = S.panel ? S.panel.hoy : new Date().toISOString().slice(0, 10);
+    $('r-desde').value = hoy.slice(0, 8) + '01';
+    $('r-hasta').value = hoy;
+  }
+
+  function calcularResumen() {
+    $('r-tabla').innerHTML = '<p class="vacio">Calculando…</p>';
+    llamar('getResumenPeriodo', $('r-desde').value, $('r-hasta').value).then(function (filas) {
+      $('r-tabla').innerHTML = filas.length
+        ? '<table><tr><th>Persona</th><th class="num">Jornadas</th><th class="num">Trabajado</th><th class="num">Pausas</th><th class="num">Sin cerrar</th></tr>' +
+          filas.map(function (r) {
+            return '<tr><td>' + esc(r.nombre) + '</td><td class="num">' + r.dias + '</td><td class="num">' + hm(r.trabajoMs) + '</td>' +
+              '<td class="num">' + hm(r.pausaMs) + '</td><td class="num">' + r.incompletas + '</td></tr>';
+          }).join('') + '</table>'
+        : '<p class="vacio">No hay personas en el equipo.</p>';
+    }).catch(function (err) { $('r-tabla').innerHTML = ''; toast(err.message, true); });
+  }
+
+  /* ---------------- Eventos ---------------- */
+
+  $('salir').innerHTML = ico('salir');
+
+  $('f-login').addEventListener('submit', function (ev) {
+    ev.preventDefault();
+    $('l-entrar').disabled = true;
+    llamarPublico('iniciarSesion', $('l-usuario').value, $('l-clave').value).then(abrirSesion).then(function () {
+      $('l-clave').value = '';
+    }).catch(function (err) {
+      toast(err.message, true);
+    }).then(function () { $('l-entrar').disabled = false; });
+  });
+
+  $('f-activar').addEventListener('submit', function (ev) {
+    ev.preventDefault();
+    if ($('a-clave').value !== $('a-clave2').value) { toast('Las dos contraseñas no coinciden.', true); return; }
+    $('a-activar').disabled = true;
+    llamarPublico('activarAdmin', $('a-codigo').value, $('a-clave').value).then(abrirSesion).then(function () {
+      $('a-codigo').value = $('a-clave').value = $('a-clave2').value = '';
+      toast('Cuenta de administrador activada.');
+    }).catch(function (err) {
+      toast(err.message, true);
+    }).then(function () { $('a-activar').disabled = false; });
+  });
+
+  $('ir-activar').addEventListener('click', function () { formulario('f-activar'); });
+  $('ir-login').addEventListener('click', function () { formulario('f-login'); });
+
+  document.addEventListener('click', function (ev) {
+    var ver = ev.target.getAttribute && ev.target.getAttribute('data-ver');
+    if (ver) {
+      var campo = $(ver), oculto = campo.type === 'password';
+      campo.type = oculto ? 'text' : 'password';
+      ev.target.textContent = oculto ? 'Ocultar' : 'Ver';
+      return;
+    }
+    var cerrar = ev.target.getAttribute && ev.target.getAttribute('data-cerrar');
+    if (cerrar) {
+      if (cerrar === 'dlg-cred') $('cred-clave').textContent = '';
+      $(cerrar).close();
+    }
+  });
+
+  $('salir').addEventListener('click', cerrarSesion);
+
+  $('tabs').addEventListener('click', function (ev) {
+    var boton = ev.target.closest('.tab');
+    if (boton) irA(boton.getAttribute('data-vista'));
+  });
+
+  $('acciones').addEventListener('click', function (ev) {
+    var boton = ev.target.closest('[data-tipo]');
+    if (boton && !boton.disabled) fichar(boton.getAttribute('data-tipo'));
+  });
+
+  $('g-empleados').addEventListener('click', function (ev) {
+    var boton = ev.target.closest('[data-accion]');
+    if (!boton) return;
+    var accion = boton.getAttribute('data-accion');
+    var i = Number(boton.getAttribute('data-emp')), emp = S.panel.empleados[i];
+    if (accion === 'mapa') { abrirMapa(emp); return; }
+    if (accion === 'horario') { abrirHorario(emp); return; }
+    if (accion === 'clave') { pedirClaveNueva(emp); return; }
+    var id = boton.getAttribute('data-id');
+    var fichaje = id ? emp.fichajes.filter(function (f) { return f.id === id; })[0] : null;
+    abrirDialogo(accion, emp, fichaje);
+  });
+
+  // Recuerda qué fichas están desplegadas para conservarlas al repintar el panel.
+  $('g-empleados').addEventListener('toggle', function (ev) {
+    var usuario = ev.target.getAttribute && ev.target.getAttribute('data-usuario');
+    if (usuario) S.abiertos[usuario] = ev.target.open;
+  }, true);
+
+  $('g-actualizar').addEventListener('click', cargarPanel);
+  $('g-fecha').addEventListener('change', cargarPanel);
+  $('g-alta').addEventListener('click', function () {
+    $('alta-nombre').value = '';
+    $('dlg-alta').showModal();
+  });
+  $('alta-form').addEventListener('submit', crearEmpleado);
+  $('dlg-form').addEventListener('submit', enviarDialogo);
+  $('hor-form').addEventListener('submit', guardarHorario);
+  $('dlg-mapa').addEventListener('close', function () { clearInterval(MAPA.timer); MAPA.emp = null; });
+  $('conf-ok').addEventListener('click', function () { if (S.pendiente) S.pendiente(); });
+  $('cred-copiar').addEventListener('click', copiarCredenciales);
+  $('dlg-cred').addEventListener('close', function () { $('cred-clave').textContent = ''; });
+  $('av-leer').addEventListener('click', function () {
+    $('av-leer').disabled = true;
+    llamar('marcarAvisosLeidos').then(pintarAvisos).catch(function (err) { toast(err.message, true); });
+  });
+  $('r-calcular').addEventListener('click', calcularResumen);
+
+  /* ---------------- Arranque ---------------- */
+
+  function arrancar() {
+    $('carga-reintentar').hidden = true;
+    $('carga-texto').textContent = 'Cargando…';
+    pantalla('carga');
+    S.token = leerSesion();
+    if (!S.token) { mostrarAcceso(); return; }
+    llamar('getEstado').then(entrar).catch(function (err) {
+      if (!S.token) { toast(err.message, true); return; }   // sesión caducada: ya se muestra el acceso
+      $('carga-texto').textContent = err.message;
+      $('carga-reintentar').hidden = false;
+    });
+  }
+
+  $('carga-reintentar').addEventListener('click', arrancar);
+  arrancar();
+</script>
+</body>
+</html>

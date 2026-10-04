@@ -1,0 +1,19 @@
+# Android / Gradle
+.gradle/
+build/
+local.properties
+.idea/
+*.iml
+captures/
+.externalNativeBuild/
+.cxx/
+
+# Binarios generados y claves de firma: no deben subirse
+*.apk
+*.aab
+*.jks
+*.keystore
+
+# Sistema
+.DS_Store
+Thumbs.db

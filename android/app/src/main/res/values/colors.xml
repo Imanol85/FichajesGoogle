@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="fondo">#F2F4FB</color>
+    <color name="tarjeta">#FFFFFF</color>
+    <color name="tinta">#14172E</color>
+    <color name="suave">#6A7090</color>
+    <color name="linea">#E5E8F3</color>
+    <color name="campo">#F6F7FC</color>
+    <color name="marca">#3B5BFD</color>
+    <color name="marca_tinte">#EEF1FF</color>
+    <color name="verde">#0FA97A</color>
+    <color name="verde_tinte">#E3F7EF</color>
+    <color name="ambar">#D98A06</color>
+    <color name="ambar_tinte">#FDF1D8</color>
+    <color name="rosa">#E5365A</color>
+    <color name="rosa_tinte">#FDE8ED</color>
+    <color name="gris">#8891AD</color>
+    <color name="gris_tinte">#ECEEF6</color>
+    <color name="hero_inicio">#0FB5AE</color>
+    <color name="hero_centro">#3B5BFD</color>
+    <color name="hero_fin">#7C3AED</color>
+</resources>

@@ -1,0 +1,4 @@
+// Si Android Studio propone actualizar el complemento de Android o Gradle, se puede aceptar.
+plugins {
+    id 'com.android.application' version '8.7.3' apply false
+}
