@@ -1,0 +1,58 @@
+# Publica la carpeta pwa/ en GitHub Pages cada vez que cambia en master.
+#
+# Requisitos en el repositorio (una sola vez):
+#   - Settings > Pages > Build and deployment > Source: GitHub Actions
+#   - Settings > Secrets and variables > Actions > Variables: FICHAJES_URL con la
+#     dirección de la aplicación web de Apps Script (la que termina en /exec)
+name: Publicar la app web de fichaje
+
+on:
+  push:
+    branches: [master]
+    paths:
+      - 'pwa/**'
+      - '.github/workflows/publicar-pwa.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  publicar:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.despliegue.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v5
+
+      # La dirección del servidor no se guarda en el repositorio: se toma de la
+      # variable FICHAJES_URL. Sin ella, la app la pide en la pantalla de acceso.
+      - name: Fijar la dirección del servidor
+        env:
+          FICHAJES_URL: ${{ vars.FICHAJES_URL }}
+        run: |
+          if [ -z "$FICHAJES_URL" ]; then
+            echo "::warning::Falta la variable FICHAJES_URL: la app pedirá la dirección del servidor al entrar."
+            exit 0
+          fi
+          if ! printf '%s' "$FICHAJES_URL" | grep -Eq '^https://script\.google\.com/macros/s/[A-Za-z0-9_-]+/exec$'; then
+            echo "::error::FICHAJES_URL debe ser la dirección de la aplicación web: https://script.google.com/macros/s/.../exec"
+            exit 1
+          fi
+          printf "window.FICHAJES_SERVIDOR = '%s';\n" "$FICHAJES_URL" > pwa/config.js
+
+      - uses: actions/configure-pages@v5
+
+      - uses: actions/upload-pages-artifact@v4
+        with:
+          path: pwa
+
+      - id: despliegue
+        uses: actions/deploy-pages@v4
