@@ -406,12 +406,6 @@
       etiqueta.textContent = f.etiqueta || f.tipo;
       li.appendChild(hora);
       li.appendChild(etiqueta);
-      if (f.origen === 'ADMIN') {
-        var nota = document.createElement('span');
-        nota.className = 'nota';
-        nota.textContent = 'Corregido';
-        li.appendChild(nota);
-      }
       lista.appendChild(li);
     });
     if (!fichajes.length) {

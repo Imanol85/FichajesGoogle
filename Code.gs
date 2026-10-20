@@ -438,8 +438,7 @@ function getMisJornadas(token) {
         salida: j.salida ? hora_(j.salida) : '',
         trabajoMs: j.trabajoMs,
         pausaMs: j.pausaMs,
-        abierta: j.abierta,
-        corregida: j.corregida
+        abierta: j.abierta
       };
     });
 }
@@ -582,8 +581,9 @@ function getResumenPeriodo(token, desde, hasta) {
   if (!desde || !hasta || desde > hasta) throw new Error('Rango de fechas no válido.');
 
   const todos = leerFichajes_(ss);
+  // Las personas dadas de baja solo aparecen si tienen jornadas en el periodo.
   return empleados_(ss).map(function (e) {
-    const r = { usuario: e.usuario, nombre: e.nombre, dias: 0, trabajoMs: 0, pausaMs: 0, incompletas: 0 };
+    const r = { usuario: e.usuario, nombre: e.nombre, activo: e.activo, dias: 0, trabajoMs: 0, pausaMs: 0, incompletas: 0 };
     calcularJornadas_(activosDe_(todos, e.usuario)).forEach(function (j) {
       if (j.fecha < desde || j.fecha > hasta) return;
       r.dias++;
@@ -592,7 +592,7 @@ function getResumenPeriodo(token, desde, hasta) {
       if (j.abierta) r.incompletas++;
     });
     return r;
-  });
+  }).filter(function (r) { return r.activo || r.dias > 0; });
 }
 
 /**
@@ -623,6 +623,33 @@ function crearEmpleado(token, nombre) {
     lock.releaseLock();
   }
   return { usuario: usuario, nombre: nombre, clave: clave, panel: panel_(ss, fecha_(Date.now())) };
+}
+
+/**
+ * Da de baja a un empleado (deja de poder entrar y desaparece del equipo) o
+ * lo reactiva. No se borra nada: sus fichajes y sus horas se conservan.
+ */
+function cambiarAltaEmpleado(token, usuario, activo, fechaPanel) {
+  const ss = ss_();
+  const a = admin_(ss, token);
+  usuario = normalizarUsuario_(usuario);
+  activo = activo === true || String(activo).toLowerCase() === 'true';
+
+  const lock = LockService.getScriptLock();
+  lock.waitLock(20000);
+  try {
+    const e = leerUsuarios_(ss).filter(function (x) { return x.usuario === usuario && x.rol === 'EMPLEADO'; })[0];
+    if (!e) throw new Error('La persona indicada no figura en la hoja de usuarios.');
+    if (e.activo !== activo) {
+      ss.getSheetByName(HOJAS.USUARIOS).getRange(e.fila, 4).setValue(activo);
+      auditar_(ss, a.usuario, activo ? 'REACTIVAR_EMPLEADO' : 'BAJA_EMPLEADO', '', usuario,
+        e.activo ? 'activo' : 'de baja', activo ? 'activo' : 'de baja', activo ? 'Reactivación desde el panel' : 'Baja desde el panel');
+      SpreadsheetApp.flush();
+    }
+  } finally {
+    lock.releaseLock();
+  }
+  return panel_(ss, fechaValida_(fechaPanel) || fecha_(Date.now()));
 }
 
 /** Genera una contraseña nueva para un empleado; la anterior deja de valer. */
@@ -882,7 +909,7 @@ function estadoUsuario_(ss, u) {
       pausaDesde = j.inicioPausa;
     }
     j.eventos.forEach(function (e) {
-      fichajes.push({ hora: hora_(e.ts), fecha: fecha_(e.ts), tipo: e.tipo, etiqueta: ETIQUETAS[e.tipo], origen: e.origen });
+      fichajes.push({ hora: hora_(e.ts), fecha: fecha_(e.ts), tipo: e.tipo, etiqueta: ETIQUETAS[e.tipo] });
     });
   });
 
