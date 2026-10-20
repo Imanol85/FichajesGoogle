@@ -177,6 +177,11 @@
   .emp-id { flex: 1; min-width: 0; }
   .emp-id strong { display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .emp-id small { color: var(--suave); }
+  .bajas summary { cursor: pointer; font-weight: 700; color: var(--suave); font-size: 14px; list-style: none; }
+  .bajas summary::-webkit-details-marker { display: none; }
+  .bajas summary::before { content: "▸ "; }
+  .bajas[open] summary::before { content: "▾ "; }
+  .baja { display: flex; align-items: center; gap: 12px; padding: 12px 0 0; margin-top: 12px; border-top: 1px solid var(--linea); opacity: .8; }
   .emp-lado { text-align: right; display: grid; gap: 4px; justify-items: end; }
   .emp-horas { font-weight: 800; font-variant-numeric: tabular-nums; white-space: nowrap; font-size: 15px; }
   .emp-cuerpo { padding: 4px 18px 18px; border-top: 1px solid var(--linea); }
@@ -325,6 +330,10 @@
         </div>
       </div>
       <div id="g-empleados"></div>
+      <details class="card bajas" id="g-bajas" hidden>
+        <summary>Personas dadas de baja (<span id="g-bajas-n">0</span>)</summary>
+        <div id="g-bajas-lista"></div>
+      </details>
     </section>
 
     <section id="vista-avisos" hidden>
@@ -711,8 +720,7 @@
 
     $('lista-hoy').innerHTML = e.fichajes.map(function (f) {
       return '<li class="t-' + esc(f.tipo) + '"><span class="hora">' + esc(f.hora) + '</span><span>' + esc(f.etiqueta) + '</span>' +
-        (f.fecha !== e.hoy ? '<span class="nota">' + esc(fechaLarga(f.fecha)) + '</span>' : '') +
-        (f.origen === 'ADMIN' ? '<span class="etiqueta marca">Corregido</span>' : '') + '</li>';
+        (f.fecha !== e.hoy ? '<span class="nota">' + esc(fechaLarga(f.fecha)) + '</span>' : '') + '</li>';
     }).join('') || '<p class="vacio">Todavía no has fichado hoy.</p>';
 
     var seg = e.config.segundosEntreUbicaciones;
@@ -793,8 +801,7 @@
         return '<div class="dia"><div class="dia-fecha"><b>' + esc(f.dia) + '</b><small>' + esc(f.mes) + '</small></div>' +
           '<div class="dia-centro"><strong>' + esc(j.entrada) + ' – ' + esc(j.salida || 'sin salida') + '</strong>' +
           '<small>' + esc(f.semana) + ' · ' + Math.round(j.pausaMs / 60000) + ' min de pausa</small> ' +
-          (j.abierta ? '<span class="etiqueta ambar">Incompleta</span> ' : '') +
-          (j.corregida ? '<span class="etiqueta marca">Corregida</span>' : '') + '</div>' +
+          (j.abierta ? '<span class="etiqueta ambar">Incompleta</span>' : '') + '</div>' +
           '<div class="dia-horas">' + hm(j.trabajoMs) + '</div></div>';
       }).join('') || '<p class="vacio">Sin jornadas registradas.</p>';
     }).catch(function (err) { toast(err.message, true); });
@@ -834,20 +841,22 @@
     pintarGlobo(p.avisosSinLeer);
 
     var n = { TRABAJANDO: 0, EN_PAUSA: 0, FUERA: 0 };
-    p.empleados.forEach(function (e) { n[e.estado]++; });
+    var bajas = [];
+    p.empleados.forEach(function (e, i) { if (e.activo) n[e.estado]++; else bajas.push(i); });
     $('g-totales').innerHTML =
       '<div class="total v"><b>' + n.TRABAJANDO + '</b><span>Trabajando</span></div>' +
       '<div class="total a"><b>' + n.EN_PAUSA + '</b><span>En pausa</span></div>' +
       '<div class="total g"><b>' + n.FUERA + '</b><span>Fuera</span></div>';
 
     $('g-empleados').innerHTML = p.empleados.map(function (e, i) {
+      if (!e.activo) return '';
       var fichajes = e.fichajes.map(function (f) {
         var anulado = f.estado === 'ANULADO';
         return '<li class="t-' + esc(f.tipo) + '"><span class="hora' + (anulado ? ' anulado' : '') + '">' + esc(f.hora) + '</span>' +
           '<span class="' + (anulado ? 'anulado' : '') + '">' + esc(f.etiqueta) + '</span>' +
           (f.lat !== '' ? enlaceMapa(f.lat, f.lng, 'mapa') : '<span class="nota">sin ubicación</span>') +
-          (anulado ? '<span class="etiqueta">Anulado</span>' : (f.origen === 'ADMIN' ? '<span class="etiqueta marca">Corregido</span>' : '')) +
-          (f.nota ? '<span class="nota">' + esc(f.nota) + '</span>' : '') +
+          (anulado ? '<span class="etiqueta">Anulado</span>' : '') +
+          (anulado && f.nota ? '<span class="nota">' + esc(f.nota) + '</span>' : '') +
           (anulado ? '' : '<span class="fin">' +
             '<button class="btn mini" data-accion="editar" data-emp="' + i + '" data-id="' + esc(f.id) + '">Editar</button>' +
             '<button class="btn mini plano" data-accion="anular" data-emp="' + i + '" data-id="' + esc(f.id) + '">Anular</button></span>') +
@@ -856,7 +865,7 @@
 
       return '<details class="card emp" data-usuario="' + esc(e.usuario) + '"' + (S.abiertos[e.usuario] ? ' open' : '') + '>' +
         '<summary><span class="avatar" style="--h:' + tono(e.usuario) + '">' + esc(iniciales(e.nombre)) + '</span>' +
-        '<span class="emp-id"><strong>' + esc(e.nombre) + '</strong><small>' + esc(e.usuario) + (e.activo ? '' : ' · desactivado') + '</small></span>' +
+        '<span class="emp-id"><strong>' + esc(e.nombre) + '</strong><small>' + esc(e.usuario) + '</small></span>' +
         '<span class="emp-lado"><span class="emp-horas">' + hm(e.trabajoMs) + '</span>' +
         '<span class="pill ' + esc(e.estado) + '"><i class="punto"></i>' + esc(ESTADOS[e.estado]) + '</span></span></summary>' +
         '<div class="emp-cuerpo">' +
@@ -872,9 +881,49 @@
         '<button class="btn mini" data-accion="crear" data-emp="' + i + '">' + ico('mas') + 'Añadir fichaje</button>' +
         '<button class="btn mini" data-accion="mapa" data-emp="' + i + '">' + ico('pin') + 'Mapa del día</button>' +
         '<button class="btn mini" data-accion="horario" data-emp="' + i + '">' + ico('reloj') + 'Horario</button>' +
-        '<button class="btn mini" data-accion="clave" data-emp="' + i + '">' + ico('llave') + 'Nueva contraseña</button></div>' +
+        '<button class="btn mini" data-accion="clave" data-emp="' + i + '">' + ico('llave') + 'Nueva contraseña</button>' +
+        '<button class="btn mini plano" data-accion="baja" data-emp="' + i + '">Dar de baja</button></div>' +
         '</div></details>';
-    }).join('') || '<div class="card"><p class="vacio">Aún no hay nadie en el equipo. Pulsa «Nueva persona» para crear la primera cuenta.</p></div>';
+    }).join('') || '<div class="card"><p class="vacio">' + (bajas.length
+      ? 'No hay nadie en activo en el equipo.'
+      : 'Aún no hay nadie en el equipo. Pulsa «Nueva persona» para crear la primera cuenta.') + '</p></div>';
+
+    // Personas dadas de baja: ocultas, con opción de reactivarlas.
+    $('g-bajas').hidden = !bajas.length;
+    $('g-bajas-n').textContent = bajas.length;
+    $('g-bajas-lista').innerHTML = bajas.map(function (i) {
+      var e = p.empleados[i];
+      return '<div class="baja"><span class="avatar" style="--h:' + tono(e.usuario) + '">' + esc(iniciales(e.nombre)) + '</span>' +
+        '<span class="emp-id"><strong>' + esc(e.nombre) + '</strong><small>' + esc(e.usuario) + '</small></span>' +
+        '<button class="btn mini" data-accion="reactivar" data-emp="' + i + '">Reactivar</button></div>';
+    }).join('');
+  }
+
+  function pedirBaja(emp) {
+    $('conf-titulo').textContent = 'Dar de baja';
+    $('conf-texto').textContent = emp.nombre + ' dejará de poder entrar en la aplicación y desaparecerá del equipo.' +
+      ' Sus fichajes y sus horas se conservan, y podrás reactivarla más adelante desde «Personas dadas de baja».';
+    $('conf-ok').textContent = 'Dar de baja';
+    $('conf-ok').disabled = false;
+    S.pendiente = function () {
+      $('conf-ok').disabled = true;
+      llamar('cambiarAltaEmpleado', emp.usuario, false, S.panel.fecha).then(function (p) {
+        $('dlg-confirmar').close();
+        pintarPanel(p);
+        toast(emp.nombre + ' ha sido dada de baja.');
+      }).catch(function (err) {
+        $('conf-ok').disabled = false;
+        toast(err.message, true);
+      });
+    };
+    $('dlg-confirmar').showModal();
+  }
+
+  function reactivar(emp) {
+    llamar('cambiarAltaEmpleado', emp.usuario, true, S.panel.fecha).then(function (p) {
+      pintarPanel(p);
+      toast(emp.nombre + ' vuelve a estar en el equipo.');
+    }).catch(function (err) { toast(err.message, true); });
   }
 
   function abrirDialogo(modo, emp, fichaje) {
@@ -1195,9 +1244,15 @@
     if (accion === 'mapa') { abrirMapa(emp); return; }
     if (accion === 'horario') { abrirHorario(emp); return; }
     if (accion === 'clave') { pedirClaveNueva(emp); return; }
+    if (accion === 'baja') { pedirBaja(emp); return; }
     var id = boton.getAttribute('data-id');
     var fichaje = id ? emp.fichajes.filter(function (f) { return f.id === id; })[0] : null;
     abrirDialogo(accion, emp, fichaje);
+  });
+
+  $('g-bajas-lista').addEventListener('click', function (ev) {
+    var boton = ev.target.closest('[data-accion="reactivar"]');
+    if (boton) reactivar(S.panel.empleados[Number(boton.getAttribute('data-emp'))]);
   });
 
   // Recuerda qué fichas están desplegadas para conservarlas al repintar el panel.

@@ -17,7 +17,7 @@ En el editor de Apps Script el fichero de servidor puede llamarse `Código.gs`; 
 ## Cuentas
 
 - **Administrador**: usuario `brillo magico` (constante `CONFIG.adminUsuario`). No ficha: gestiona el equipo, corrige fichajes y recibe los avisos. La contraseña la elige su titular la primera vez, con un código de activación.
-- **Empleados**: el administrador los da de alta desde la pestaña Equipo. La aplicación genera el usuario (a partir del nombre) y una contraseña de 10 caracteres, que se muestra una sola vez. Con «Nueva contraseña» se genera otra y se cierran las sesiones abiertas de esa persona.
+- **Empleados**: el administrador los da de alta desde la pestaña Equipo. La aplicación genera el usuario (a partir del nombre) y una contraseña de 10 caracteres, que se muestra una sola vez. Con «Nueva contraseña» se genera otra y se cierran las sesiones abiertas de esa persona. Con «Dar de baja» la persona deja de poder entrar y desaparece del equipo, sin borrar nada: queda en «Personas dadas de baja», desde donde se puede reactivar. Sus horas siguen saliendo en los informes de los periodos en que trabajó.
 
 En la hoja `Usuarios` solo se guarda el hash de cada contraseña, nunca la contraseña. Tras 5 intentos fallidos seguidos, la cuenta queda bloqueada 15 minutos. La sesión se recuerda en el dispositivo 30 días o hasta pulsar el botón de salir.
 
@@ -27,7 +27,7 @@ En la hoja `Usuarios` solo se guarda el hash de cada contraseña, nunca la contr
 - **Ubicación durante la jornada**: desde la entrada hasta la salida se guarda la posición cada 30 segundos (`CONFIG.segundosEntreUbicaciones`). Con la app Android funciona también con el móvil bloqueado; desde la web y desde la app de iPhone, solo con la página abierta y a la vista. Por defecto se detiene en las pausas (`CONFIG.seguimientoEnPausas`).
 - **Avisos a la hora de fichar**: el administrador fija para cada persona hora de entrada, hora de salida y días. La app Android avisa en el móvil a esas horas si la persona no ha fichado.
 - **Equipo**: estado de cada persona, horas del día y última posición con su antigüedad; el panel se actualiza solo cada minuto. «Mapa del día» dibuja el recorrido y se refresca cada 30 segundos mientras está abierto. Si alguien está trabajando y no llega posición en cinco minutos, aparece "Sin señal reciente".
-- **Corrección de horas**: el administrador corrige, añade o anula fichajes, siempre con motivo. El valor anterior y el nuevo quedan en la hoja `Auditoria`; un fichaje anulado no se borra, se marca.
+- **Corrección de horas**: el administrador corrige, añade o anula fichajes, siempre con motivo. Un fichaje corregido se muestra en las aplicaciones como uno normal; el valor anterior, el nuevo y el motivo quedan solo en la hoja `Auditoria` (y la columna `CorregidaPorAdmin` de `Resumen`). Un fichaje anulado no se borra, se marca.
 - **Informes**: horas por persona en un periodo. La hoja `Resumen` se regenera con cada cambio: una fila por persona y jornada.
 
 ## Avisos al administrador
@@ -70,11 +70,11 @@ Ejecutar la función `restablecerAdmin` desde el editor. Borra la contraseña y 
 |------|----------|
 | `Fichajes` | Id, FechaHora, Usuario, Tipo, Latitud, Longitud, PrecisionM, Origen (APP / ADMIN), Estado (ACTIVO / ANULADO), Nota |
 | `Usuarios` | Usuario, Nombre, Rol (ADMIN / EMPLEADO), Activo, Sal, Hash, HoraEntrada, HoraSalida, Dias (1 = lunes ... 7 = domingo) |
-| `Auditoria` | FechaHora, Administrador, Accion, IdFichaje, Empleado, ValorAnterior, ValorNuevo, Motivo |
+| `Auditoria` | FechaHora, Administrador, Accion (correcciones, altas, bajas, reactivaciones, horarios, contraseñas), IdFichaje, Empleado, ValorAnterior, ValorNuevo, Motivo |
 | `Resumen` | Fecha, Usuario, Nombre, Entrada, Salida, PausasMin, HorasTrabajadas, Jornada, CorregidaPorAdmin |
 | `Avisos` | Id, FechaHora, Tipo, Usuario, Texto, Leido, Clave |
 
-Para desactivar a alguien se desmarca `Activo` en su fila de `Usuarios`. Las columnas `Sal` y `Hash` no deben editarse a mano.
+La columna `Activo` de `Usuarios` es la que cambian «Dar de baja» y «Reactivar». Las columnas `Sal` y `Hash` no deben editarse a mano.
 
 ### Libro de ubicaciones
 
